@@ -10,6 +10,9 @@ namespace FileManager
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("File manager");
+
+            Console.ReadLine();
         }
     }
 }
