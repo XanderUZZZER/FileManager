@@ -17,8 +17,12 @@ namespace FileManager
         {
             width = w;
             height = h;
-            leftPanel = new Panel(1, width / 2, height);
-            rightPanel = new Panel(1, width / 2, height);
+            Console.Title = "File manager";
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.Clear();
+            leftPanel = new Panel(0, 0, width / 2 - 2, height - 2);
+            rightPanel = new Panel( width / 2 + 1, 0, width / 2 - 2, height - 2);
         }
     }
 }

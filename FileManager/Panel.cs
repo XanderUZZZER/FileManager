@@ -8,24 +8,44 @@ namespace FileManager
 {
     class Panel
     {
-        int xStart;
+        int top;
+        int left;
         int width;
         int height;
 
-        public Panel(int x, int w, int h)
-        {
-            xStart = x;            
+        public Panel(int left, int top, int w, int h)
+        {            
+            this.left = left;
+            this.top = top;
             width = w;
             height = h;
             draw();
         }
 
         void draw()
-        {
-            Console.WriteLine("╔");
-            Console.WriteLine("╗");
-            Console.WriteLine("╚");
-            Console.WriteLine("╝");
+        {            
+            Console.SetCursorPosition(left, top);
+            Console.Write("╔");
+            for (int i = 1; i < width; i++)
+            {
+                Console.Write("═");
+            }
+            Console.Write("╗");
+            for (int i = top + 1; i<height; i++)
+            {
+                Console.SetCursorPosition(left, i);
+                Console.Write("║");
+                Console.SetCursorPosition(left + width, i);
+                Console.Write("║");
+            }
+
+            Console.SetCursorPosition(left, height);
+            Console.Write("╚");
+            for (int i =1 ; i < width; i++)
+            {
+                Console.Write("═");
+            }
+            Console.Write("╝");
         }
     }
 }

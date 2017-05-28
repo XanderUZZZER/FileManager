@@ -11,8 +11,8 @@ namespace FileManager
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("File manager");
-            ConsoleForm form = new ConsoleForm(Console.WindowWidth, Console.WindowHeight);
+            Console.SetBufferSize(Console.WindowWidth, Console.WindowHeight);
+            ConsoleForm form = new ConsoleForm(Console.WindowWidth , Console.WindowHeight );
             Console.ReadLine();
         }
     }
