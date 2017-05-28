@@ -11,7 +11,7 @@ namespace FileManager
     {
         static void Main(string[] args)
         {
-            Console.SetWindowSize(130, 31);
+            Console.SetWindowSize(130, 30);
             Console.SetBufferSize(Console.WindowWidth, Console.WindowHeight);
             ConsoleForm form = new ConsoleForm(Console.WindowWidth , Console.WindowHeight );
             form.Run();

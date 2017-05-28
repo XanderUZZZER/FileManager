@@ -13,37 +13,36 @@ namespace FileManager
         int left;
         int width;
         int height;
-        int cursorOffset = 1;
-        int activeItemIndex = 0;
-        ConsoleColor foregroundColor;
-        ConsoleColor backgroundColor;
-        DirectoryInfo currentDir;
+        int cursorOffset = 1;        
+        ConsoleColor foregroundColor = ConsoleColor.White;
+        ConsoleColor backgroundColor = ConsoleColor.DarkGray;
+        public DirectoryInfo currentDir;
         DirectoryInfo[] dirs;
         FileInfo[] files;
         List<FileSystemInfo> items = new List<FileSystemInfo>();
+        public FileSystemInfo ActiveItem;
+        int activeItemIndex = 0;
 
-        public Panel(int left, int top, int w, int h, ConsoleColor foregroundColor, ConsoleColor backgroundColor)
+        public Panel(int left, int top, int width, int height)
         {            
             this.left = left;
             this.top = top;
-            this.foregroundColor = foregroundColor;
-            this.backgroundColor = backgroundColor;
-            width = w;
-            height = h;
+            this.width = width;
+            this.height = height;
             currentDir = new DirectoryInfo("C:\\");
-            //currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
             dirs = currentDir.GetDirectories();
             files = currentDir.GetFiles();
             items.AddRange(dirs);
             items.AddRange(files);
-            drawBorder();
+            ActiveItem = items[activeItemIndex];
+            DrawBorder();
             drawAllItems();
         }
 
-        void drawBorder()
+        void DrawBorder()
         {
             Console.ForegroundColor = foregroundColor;
-            Console.BackgroundColor = backgroundColor;      
+            Console.BackgroundColor = backgroundColor;
             Console.SetCursorPosition(left, top);
             Console.Write("╔");
             for (int i = 1; i < width; i++)
@@ -58,7 +57,6 @@ namespace FileManager
                 Console.SetCursorPosition(left + width, i);
                 Console.Write("║");
             }
-
             Console.SetCursorPosition(left, height);
             Console.Write("╚");
             for (int i =1 ; i < width; i++)
@@ -69,9 +67,10 @@ namespace FileManager
         }
         void drawAllItems()
         {
+            Console.ForegroundColor = foregroundColor;
+            Console.BackgroundColor = backgroundColor;
             Console.SetCursorPosition(left + 1, top + 1);
             Console.Write($"{currentDir.Root}");
-
             Console.SetCursorPosition(left + 1, top + 2);
             for (int i = left + 1; i < left + width; i++)
             {
@@ -83,7 +82,14 @@ namespace FileManager
             {
                 Console.SetCursorPosition(left + 1, top + cursorOffset);
                 Console.Write($"{item.Name,-62}");
+                if (cursorOffset == 29)
+                    cursorOffset = 3;
                 cursorOffset++;
+            }
+            for (int i = cursorOffset; i< height; i++)
+            {
+                Console.SetCursorPosition(left + 1, top + i);
+                Console.Write($"{"", -62}");
             }
             drawActiveItem();
         }
@@ -92,20 +98,67 @@ namespace FileManager
             Console.SetCursorPosition(left + 1, top + activeItemIndex + 3);
             Console.BackgroundColor = foregroundColor;
             Console.ForegroundColor = backgroundColor;
-            Console.Write($"{items[activeItemIndex].Name, -62}");
+            Console.Write($"{ActiveItem.Name,-62}");
             Console.BackgroundColor = backgroundColor;
             Console.ForegroundColor = foregroundColor;
         }
         public void MoveUpActiveItem()
         {
             if (activeItemIndex != 0)
+            {
                 activeItemIndex--;
+                ActiveItem = items[activeItemIndex];
+            }                
             drawAllItems();
         }
         public void MoveDownActiveItem()
         {
-            if (activeItemIndex != items.Count - 1)
+            if (activeItemIndex != items.Count - 1 && items.Count != 0)
+            {
                 activeItemIndex++;
+                ActiveItem = items[activeItemIndex];
+            }                
+            drawAllItems();
+        }
+        public void setActive()
+        {
+            foregroundColor = ConsoleColor.White;
+            DrawBorder();
+            drawAllItems();
+        }
+        public void setUnactive()
+        {
+            foregroundColor = ConsoleColor.Gray;
+            DrawBorder();
+            drawAllItems();
+        }
+        public void OpenDir()
+        {
+            if (ActiveItem is DirectoryInfo)
+                currentDir = new DirectoryInfo(ActiveItem.FullName);
+            dirs = currentDir.GetDirectories();
+            files = currentDir.GetFiles();
+            items.Clear();
+            items.AddRange(dirs);
+            items.AddRange(files);
+            activeItemIndex = 0;
+            if (items.Count > 0)
+                ActiveItem = items[activeItemIndex];
+            DrawBorder();
+            drawAllItems();
+        }
+        public void CloseDir()
+        {
+            if (currentDir.Parent.Name != null)
+                currentDir = new DirectoryInfo(currentDir.Parent.Name);
+            dirs = currentDir.GetDirectories();
+            files = currentDir.GetFiles();
+            items.Clear();
+            items.AddRange(dirs);
+            items.AddRange(files);
+            activeItemIndex = 0;
+            ActiveItem = items[activeItemIndex];
+            DrawBorder();
             drawAllItems();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace FileManager
         int height;
         Panel leftPanel;
         Panel rightPanel;
+        Panel activePanel;
         KeyEvent evnt = new KeyEvent();
         ConsoleKey ck;     
 
@@ -21,10 +23,13 @@ namespace FileManager
             height = h;
             Console.Title = "File manager";
             Console.BackgroundColor = ConsoleColor.DarkGray;
-            Console.Clear();
-            Console.CursorVisible = false;
-            leftPanel = new Panel(0, 0, width / 2 - 2, height - 2, ConsoleColor.White, ConsoleColor.DarkGray);
-            rightPanel = new Panel( width / 2 + 1, 0, width / 2 - 2, height - 2, ConsoleColor.Gray, ConsoleColor.DarkGray);
+            Console.Clear();    
+            Console.CursorVisible = false;        
+            leftPanel = new Panel(0, 0, width / 2 - 2, height - 2);
+            rightPanel = new Panel( width / 2 + 1, 0, width / 2 - 2, height - 2);
+            leftPanel.setActive();
+            rightPanel.setUnactive();
+            activePanel = leftPanel;
             Console.BackgroundColor = ConsoleColor.DarkYellow;
             Console.ForegroundColor = ConsoleColor.Black;
             Console.SetCursorPosition(0, height - 1);
@@ -39,13 +44,39 @@ namespace FileManager
                 {
                     case ConsoleKey.UpArrow:
                         {
-                            leftPanel.MoveUpActiveItem();
+                            activePanel.MoveUpActiveItem();
                             break;
 
                         }
                     case ConsoleKey.DownArrow:
                         {
-                            leftPanel.MoveDownActiveItem();
+                            activePanel.MoveDownActiveItem();
+                            break;
+                        }
+                    case ConsoleKey.Tab:
+                        {
+                            if (activePanel == leftPanel)
+                            {
+                                rightPanel.setActive();
+                                leftPanel.setUnactive();
+                                activePanel = rightPanel;
+                            }                                
+                            else
+                            {
+                                leftPanel.setActive();
+                                rightPanel.setUnactive();
+                                activePanel = leftPanel;
+                            }
+                            break;
+                        }
+                    case ConsoleKey.Enter:
+                        {
+                            activePanel.OpenDir();
+                            break;
+                        }
+                    case ConsoleKey.Backspace:
+                        {
+                            activePanel.CloseDir();
                             break;
                         }
                     default:
@@ -56,7 +87,7 @@ namespace FileManager
             };
             while (true)
             {
-                Console.SetCursorPosition(20, 20);
+                Console.SetCursorPosition(64, 20);
                 Console.CursorVisible = false;
                 ConsoleKeyInfo cki;
                 
