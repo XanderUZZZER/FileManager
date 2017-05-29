@@ -89,6 +89,11 @@ namespace FileManager
                             activePanel.ShowDisks();
                             break;
                         }
+                    //case ConsoleKey.F6:
+                    //    {
+                    //        activePanel.ShowProps();
+                    //        break;
+                    //    }
                     case ConsoleKey.F7:
                         {
                             activePanel.Rename();

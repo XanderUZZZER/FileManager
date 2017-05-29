@@ -252,6 +252,21 @@ namespace FileManager
                 DrawError("Can't rename");
             }
         }
+        //public void ShowProps()
+        //{
+        //    Console.ForegroundColor = ConsoleColor.Red;
+        //    Console.BackgroundColor = ConsoleColor.DarkRed;
+        //    Console.SetCursorPosition(left + 10, 20);
+        //    Console.Write($"Name: \t\t{ActiveItem.Name,-30}");
+        //    Console.SetCursorPosition(left + 10, 21);
+        //    Console.Write($"Parent folder: \t{currentDir.FullName,-30}");
+        //    Console.SetCursorPosition(left + 10, 22);
+        //    Console.Write($"Root folder: \t\t{currentDir.Root.Name,-30}");
+        //    Console.SetCursorPosition(left + 10, 23);
+        //    Console.Write($"Last readtime:\t{ActiveItem.LastAccessTime,-30}");
+        //    Console.SetCursorPosition(left + 10, 24);
+        //    Console.Write($"Last writetime:\t{ActiveItem.LastWriteTime,-30}");
+        //}
         public void ShowDisks()
         {
             items.Clear();
