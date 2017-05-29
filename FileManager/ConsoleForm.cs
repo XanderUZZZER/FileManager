@@ -27,8 +27,8 @@ namespace FileManager
             Console.CursorVisible = false;        
             leftPanel = new Panel(0, 0, width / 2 - 2, height - 2);
             rightPanel = new Panel( width / 2 + 1, 0, width / 2 - 2, height - 2);
-            leftPanel.setActive();
-            rightPanel.setUnactive();
+            leftPanel.SetActive();
+            rightPanel.SetUnactive();
             activePanel = leftPanel;
             Console.BackgroundColor = ConsoleColor.DarkYellow;
             Console.ForegroundColor = ConsoleColor.Black;
@@ -57,14 +57,14 @@ namespace FileManager
                         {
                             if (activePanel == leftPanel)
                             {
-                                rightPanel.setActive();
-                                leftPanel.setUnactive();
+                                rightPanel.SetActive();
+                                leftPanel.SetUnactive();
                                 activePanel = rightPanel;
                             }                                
                             else
                             {
-                                leftPanel.setActive();
-                                rightPanel.setUnactive();
+                                leftPanel.SetActive();
+                                rightPanel.SetUnactive();
                                 activePanel = leftPanel;
                             }
                             break;

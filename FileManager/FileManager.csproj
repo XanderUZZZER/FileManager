@@ -46,7 +46,6 @@
     <Compile Include="ConsoleForm.cs" />
     <Compile Include="KeyEvent.cs" />
     <Compile Include="Panel.cs" />
-    <Compile Include="PanelItem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
