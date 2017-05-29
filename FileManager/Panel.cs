@@ -18,11 +18,11 @@ namespace FileManager
         ConsoleColor backgroundColor = ConsoleColor.DarkGray;
         DirectoryInfo currentDir;
         List<FileSystemInfo> items = new List<FileSystemInfo>();
-        FileSystemInfo ActiveItem;
-        int activeItemIndex = 0;
-        int startDispalyIndex = 0;
-        int endDispalyIndex = 0;
-        Stack<int> tempIndex = new Stack<int>();
+        FileSystemInfo ActiveItem;                              //highlight (current) item (folder/file)
+        int activeItemIndex = 0;                                //index of highlight (current) item
+        int startDispalyIndex = 0;                              //indexe of first item to show inside panel
+        int endDispalyIndex = 0;                                //index of last item to show 
+        Stack<int> tempIndex = new Stack<int>();                //temp index, for moving back in folders
         DriveInfo[] allDrives = DriveInfo.GetDrives();
 
         public Panel(int left, int top, int width, int height)
@@ -80,6 +80,7 @@ namespace FileManager
                 Console.Write($"{items[i + startDispalyIndex].Name,-62}");
                 cursorOffset++;
             }
+            //redraw empty rows
             for (int i = cursorOffset; i < height; i++)
             {
                 Console.SetCursorPosition(left + 1, top + i);
