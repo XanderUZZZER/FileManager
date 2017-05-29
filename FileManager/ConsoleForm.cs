@@ -79,6 +79,26 @@ namespace FileManager
                             activePanel.CloseDir();
                             break;
                         }
+                    case ConsoleKey.F4:
+                        {
+                            activePanel.Root();
+                            break;
+                        }
+                    case ConsoleKey.F5:
+                        {
+                            activePanel.ShowDisks();
+                            break;
+                        }
+                    case ConsoleKey.F7:
+                        {
+                            activePanel.Rename();
+                            break;
+                        }
+                    case ConsoleKey.F9:
+                        {
+                            activePanel.CreateDir();
+                            break;
+                        }
                     default:
                         {
                             break;

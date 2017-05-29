@@ -16,14 +16,14 @@ namespace FileManager
         int cursorOffset = 1;
         ConsoleColor foregroundColor = ConsoleColor.White;
         ConsoleColor backgroundColor = ConsoleColor.DarkGray;
-        public DirectoryInfo currentDir;
-        DirectoryInfo[] dirs;
-        FileInfo[] files;
+        DirectoryInfo currentDir;
         List<FileSystemInfo> items = new List<FileSystemInfo>();
-        public FileSystemInfo ActiveItem;
+        FileSystemInfo ActiveItem;
         int activeItemIndex = 0;
         int startDispalyIndex = 0;
         int endDispalyIndex = 0;
+        Stack<int> tempIndex = new Stack<int>();
+        DriveInfo[] allDrives = DriveInfo.GetDrives();
 
         public Panel(int left, int top, int width, int height)
         {
@@ -74,9 +74,9 @@ namespace FileManager
             }
 
             cursorOffset = 3;
-            for (int i = 0 ; i < height && i + startDispalyIndex <= endDispalyIndex && items.Count != 0; i++)
+            for (int i = 0; i < height && i + startDispalyIndex <= endDispalyIndex && items.Count != 0; i++)
             {
-                Console.SetCursorPosition(left + 1, top +  cursorOffset);
+                Console.SetCursorPosition(left + 1, top + cursorOffset);
                 Console.Write($"{items[i + startDispalyIndex].Name,-62}");
                 cursorOffset++;
             }
@@ -99,6 +99,26 @@ namespace FileManager
                 Console.ForegroundColor = foregroundColor;
             }
         }
+        void DrawError(string err)
+        {
+            Console.SetCursorPosition(left + 25, top / 2);
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($"{err,10}");
+            Console.BackgroundColor = backgroundColor;
+            Console.ForegroundColor = foregroundColor;
+        }
+        string DrawInput()
+        {
+            Console.SetCursorPosition(left + 25, top / 2);
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($"Input name:");
+            string s = Console.ReadLine();
+            Console.BackgroundColor = backgroundColor;
+            Console.ForegroundColor = foregroundColor;
+            return s;
+        }
         public void MoveUpActiveItem()
         {
             if (items.Count != 0 && activeItemIndex != startDispalyIndex && activeItemIndex != 0)
@@ -113,11 +133,12 @@ namespace FileManager
                 startDispalyIndex = activeItemIndex;
                 endDispalyIndex = items.Count - startDispalyIndex > 24 ? startDispalyIndex + 24 : items.Count - 1;
             }
+            DrawBorder();
             DrawAllItems();
         }
         public void MoveDownActiveItem()
         {
-            if (items.Count !=0 && activeItemIndex != endDispalyIndex)
+            if (items.Count != 0 && activeItemIndex != endDispalyIndex)
             {
                 activeItemIndex++;
                 ActiveItem = items[activeItemIndex];
@@ -127,8 +148,9 @@ namespace FileManager
                 activeItemIndex++;
                 ActiveItem = items[activeItemIndex];
                 startDispalyIndex++;
-                endDispalyIndex = items.Count - startDispalyIndex > 24 ? endDispalyIndex+1 : items.Count - 1;
+                endDispalyIndex = items.Count - startDispalyIndex > 24 ? endDispalyIndex + 1 : items.Count - 1;
             }
+            DrawBorder();
             DrawAllItems();
         }
         public void SetActive()
@@ -143,25 +165,109 @@ namespace FileManager
             DrawBorder();
             DrawAllItems();
         }
+        public void Root()
+        {
+            tempIndex.Clear();
+            currentDir = new DirectoryInfo(currentDir.Root.Name);
+            GetItems();
+            DrawBorder();
+            DrawAllItems();
+        }
         public void OpenDir()
         {
             if (ActiveItem is DirectoryInfo)
+            {
+                tempIndex.Push(activeItemIndex);
                 currentDir = new DirectoryInfo(ActiveItem.FullName);
-            GetItems();
+                try
+                {
+                    GetItems();
+                    DrawBorder();
+                    DrawAllItems();
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    CloseDir();
+                    DrawBorder();
+                    DrawAllItems();
+                    DrawError("Access denied");
+                }
+            }
         }
         public void CloseDir()
         {
             if (currentDir.Name != currentDir.Root.Name)
+            {
                 currentDir = new DirectoryInfo(currentDir.Parent.FullName);
-            GetItems();
+                GetItems();
+                if (tempIndex.Count != 0)
+                    activeItemIndex = tempIndex.Pop();
+                ActiveItem = items[activeItemIndex];
+            }
+            DrawBorder();
+            DrawAllItems();
+        }
+        public void CreateDir()
+        {
+            string input = DrawInput();
+            try
+            {
+                currentDir.CreateSubdirectory(input);
+                GetItems();
+                DrawBorder();
+                DrawAllItems();
+            }
+            catch
+            {
+                GetItems();
+                DrawBorder();
+                DrawAllItems();
+                DrawError("Wrong name, can't create folder");
+            }
+        }
+        public void Rename()
+        {
+            string input = DrawInput();
+            try
+            {
+                if (ActiveItem is FileInfo)
+                {
+                    File.Copy(ActiveItem.FullName, currentDir.FullName + "\\" + input);
+                    File.Delete(ActiveItem.FullName);
+                }
+                else
+                {
+                    Directory.Move(ActiveItem.FullName, currentDir.FullName + "\\" + input);
+                }
+                GetItems();
+                DrawBorder();
+                DrawAllItems();
+            }
+            catch
+            {
+                GetItems();
+                DrawBorder();
+                DrawAllItems();
+                DrawError("Can't rename");
+            }
+        }
+        public void ShowDisks()
+        {
+            items.Clear();
+            activeItemIndex = 0;
+            foreach (var item in allDrives)
+            {
+                items.Add(item.RootDirectory);
+            }
+            ActiveItem = items[activeItemIndex];
+            endDispalyIndex = items.Count - 1;
+            DrawAllItems();
         }
         void GetItems()
         {
-            dirs = currentDir.GetDirectories();
-            files = currentDir.GetFiles();
             items.Clear();
-            items.AddRange(dirs);
-            items.AddRange(files);
+            items.AddRange(currentDir.GetDirectories());
+            items.AddRange(currentDir.GetFiles());
             activeItemIndex = 0;
             if (items.Count > 0)
             {
@@ -169,8 +275,6 @@ namespace FileManager
                 startDispalyIndex = 0;
                 endDispalyIndex = items.Count > 24 ? 24 : items.Count - 1;
             }
-            DrawBorder();
-            DrawAllItems();
         }
     }
 }
